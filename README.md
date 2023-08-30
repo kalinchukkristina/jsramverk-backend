@@ -1,2 +1,2 @@
-# jframverk-backend
-A repository for test app backend in js ramverk course.
+# jsremverk-backend
+ A repository for backend in JSramverk course
