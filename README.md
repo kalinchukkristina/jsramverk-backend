@@ -40,7 +40,6 @@ Välkommen till Gruppen! Detta projekt använder olika npm-paket för att driva 
 ### 7. Semver (Måttlig allvarlighet)
 - **Sårbarhet:** Regular Expression Denial of Service i Semver (CVE-XXXX-XXXX)
 - **Beskrivning:** Semver-paketet lider av en sårbarhet kopplad till reguljära uttryck, som kan potentiellt utnyttjas för en attack.
-- **Länk:** [CVE-XXXX-XXXX](https://github.com/advisories/GHSA-c2qf-rxjj-qqgw)
 - **Åtgärd:** Åtgärdat genom att uppgradera till en säker version.
 
 ## Åtgärdsåtgärder
