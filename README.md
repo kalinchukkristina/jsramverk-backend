@@ -55,3 +55,9 @@ För att lösa dessa sårbarheter har vi vidtagit följande åtgärder:
 1. Kör `npm audit fix` för att automatiskt åtgärda sårbarheter.
 </details>
 
+
+<details> 
+ <summary><code>3. Val av Frontend Ramverk.</code></summary>
+ - React
+
+ </details>
