@@ -56,6 +56,20 @@ För att lösa dessa sårbarheter har vi vidtagit följande åtgärder:
 </details>
 
 
+
+<details> 
+ <summary><code>2. Beskriv i README.md vilka steg ni fick gå igenom för att få applikationen att fungera.</code></summary>
+
+## Trafikverkets API nyckel
+För att starta applikationen behövde vi fixa en egen API nyckel från Trafikverket. Vi lade den i en .env fil och exkluderade den från GitHub eftersom den typen av information anses vara känslig.
+
+## Databas
+Dessutom behövde vi köra en migration för att skapa tabellen "trains" i databasen.
+
+## Favicon
+Vi var också tvungna att lägga till en favicon bild så att frontend delen av applikationen skulle fungera utan några fel.
+ </details>
+
 <details> 
  <summary><code>3. Val av Frontend Ramverk.</code></summary>
  - React
