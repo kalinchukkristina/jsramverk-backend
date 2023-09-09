@@ -85,7 +85,6 @@ Vi var också tvungna att lägga till en favicon bild så att frontend delen av 
 
  </details>
 
-
 # Interacting with the API
 
  <details>
@@ -113,6 +112,41 @@ To retrieve ticket information, follow these steps:
 		"traindate": "2023-09-11"
 	}
 ]
+```
+
+ </details>
+
+ <details>
+ <summary><code>Making a POST Request</code></summary>
+To create a new ticket, follow these steps:
+
+**Request Method:** Use the POST method.
+
+**Endpoint:** Send the POST request to `http://localhost:1337/tickets`.
+
+**Request Body:** In the request body, provide the data for creating a ticket in JSON format. For example:
+
+```json
+{
+	"code": "ABC123",
+	"trainnumber": "12345",
+	"traindate": "2023-09-10"
+}
+```
+
+Replace the values with the actual data you want to use for creating the ticket.
+
+**Response:** You will receive a JSON response indicating the success or failure of the ticket creation. A successful response might look like this:
+
+```json
+{
+	"data": {
+		"id": "3",
+		"code": "ABC123",
+		"trainnumber": "12345",
+		"traindate": "2023-09-10"
+	}
+}
 ```
 
  </details>
