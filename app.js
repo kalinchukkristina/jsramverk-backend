@@ -2,10 +2,10 @@ require('dotenv').config()
 
 const express = require('express')
 const cors = require('cors')
-const morgan = require('morgan')
 const bodyParser = require('body-parser')
 
-const fetchTrainPositions = require('./models/trains.js')
+const { connectDb } = require('./db/database'); // Update the import statement
+
 const delayed = require('./routes/delayed.js');
 const tickets = require('./routes/tickets.js');
 const codes = require('./routes/codes.js');
@@ -30,18 +30,24 @@ const io = require("socket.io")(httpServer, {
 
 const port = 1337
 
+// Connect to MongoDB before starting the Express server
+connectDb()
+  .then(() => {
+    console.log('Connected to MongoDB');
+    httpServer.listen(port, () => {
+      console.log(`JSBackend app listening on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+  });
+
 app.get('/', (req, res) => {
   res.json({
-      data: 'Hello World!'
+    data: 'Hello World!'
   })
 })
 
 app.use("/delayed", delayed);
 app.use("/tickets", tickets);
 app.use("/codes", codes);
-
-httpServer.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
-fetchTrainPositions(io);

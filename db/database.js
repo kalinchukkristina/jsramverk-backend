@@ -1,19 +1,18 @@
-const sqlite3 = require('sqlite3').verbose();
-const { open } = require('sqlite');
+require('dotenv').config(); // Load environment variables from .env file
 
-const database = {
-    openDb: async function openDb() {
-        let dbFilename = `./db/trains.sqlite`;
+const mongoose = require('mongoose');
 
-        if (process.env.NODE_ENV === 'test') {
-            dbFilename = "./db/test.sqlite";
-        }
-
-        return await open({
-            filename: dbFilename,
-            driver: sqlite3.Database
+const connectDb = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
         });
+        console.log('MongoDB connected');
+    } catch (error) {
+        console.error('MongoDB connection error:', error);
+        throw error;
     }
 };
 
-module.exports = database;
+module.exports = { connectDb };
