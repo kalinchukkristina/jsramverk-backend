@@ -89,6 +89,7 @@ Vi var också tvungna att lägga till en favicon bild så att frontend delen av 
 
  <details>
  <summary><code>Making a GET Request</code></summary>
+
 To retrieve ticket information, follow these steps:
 
 **Request Method:** Use the GET method.
@@ -118,6 +119,7 @@ To retrieve ticket information, follow these steps:
 
  <details>
  <summary><code>Making a POST Request</code></summary>
+
 To create a new ticket, follow these steps:
 
 **Request Method:** Use the POST method.
