@@ -85,6 +85,9 @@ Vi var också tvungna att lägga till en favicon bild så att frontend delen av 
 
  </details>
 
+
+# Interacting with the API
+
  <details>
  <summary><code>Making a GET Request</code></summary>
 To retrieve ticket information, follow these steps:
