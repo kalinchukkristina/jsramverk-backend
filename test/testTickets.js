@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test';
+
 const chai = require('chai');
 const expect  = chai.expect;
 const chaiHttp = require('chai-http');
@@ -7,6 +9,32 @@ require('chai').should();
 chai.use(chaiHttp);
 
 describe('Tests for /tickets route', () => {
+
+  beforeEach(async () => {
+    const newTicket = {
+      trainnumber: 'Test Train',
+      code: 'test code',
+      traindate: '2023-09-09'
+    };
+
+    const response = await chai
+      .request(server)
+      .post('/tickets')
+      .send(newTicket);
+
+      testTicketId = response.body.data.id 
+  });
+
+  afterEach(async () => {
+    if (testTicketId) {
+      await chai
+        .request(server)
+        .delete(`/tickets/${testTicketId}`);
+    }
+  });
+
+  
+
   it('Test route response code...', (done) => {
     chai
     .request(server)
@@ -62,4 +90,60 @@ describe('Tests for /tickets route', () => {
       done();
     });
   })
+
+  it('Test to create a new ticket', (done) => {
+    const newTicket = {
+      trainnumber: 'kristina123',
+      code: 'haha888',
+      traindate: '2023-09-09'
+    };
+
+    chai
+      .request(server)
+      .post('/tickets')
+      .send(newTicket)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res).to.have.status(201);
+        expect(res.body).to.be.an('object');
+        expect(res.body.data).to.have.property('code', newTicket.code);
+        expect(res.body.data).to.have.property('trainnumber', newTicket.trainnumber);
+
+        done();
+      });
+  });
+
+  it('Test to create a wrong new ticket', (done) => {
+    const newTicket = {
+      name: 'karlskrona'
+    };
+
+    chai
+      .request(server)
+      .post('/tickets')
+      .send(newTicket)
+      .end((err, res) => {
+          expect(res).to.have.status(500);
+          done();
+        
+      });
+  });
+
+  it('Test to delete a wrong new ticket', (done) => {
+    chai
+      .request(server)
+      .delete(`/tickets/testId`)
+      .end((err, response) => {
+        if (err) {
+          return done(err);
+        }
+
+        expect(response).to.have.status(500);
+        expect(response.body).to.deep.equal({ error: 'Internal Server Error' });
+
+        done();
+      });
+  });
 })
