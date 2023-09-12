@@ -53,3 +53,5 @@ app.use("/tickets", tickets);
 app.use("/codes", codes);
 
 fetchTrainPositions(io);
+
+module.exports = app;
