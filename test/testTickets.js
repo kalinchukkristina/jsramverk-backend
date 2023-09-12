@@ -107,7 +107,20 @@ describe('Tests for /tickets route', () => {
         expect(res.body).to.be.an('object');
         expect(res.body.data).to.have.property('code', newTicket.code);
         expect(res.body.data).to.have.property('trainnumber', newTicket.trainnumber);
-        done();
+
+        const createdTicketId = res.body.data.id;
+
+        chai
+          .request(server)
+          .delete(`/tickets/${createdTicketId}`)
+          .end((error, response) => {
+            if (error) {
+              return done(error);
+            }
+
+            expect(response).to.have.status(200);
+            done();
+          });
       });
   });
 
