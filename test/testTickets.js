@@ -9,7 +9,6 @@ require('chai').should();
 chai.use(chaiHttp);
 
 describe('Tests for /tickets route', () => {
-
   beforeEach(async () => {
     const newTicket = {
       trainnumber: 'Test Train',
@@ -32,8 +31,6 @@ describe('Tests for /tickets route', () => {
         .delete(`/tickets/${testTicketId}`);
     }
   });
-
-  
 
   it('Test route response code...', (done) => {
     chai
@@ -110,7 +107,6 @@ describe('Tests for /tickets route', () => {
         expect(res.body).to.be.an('object');
         expect(res.body.data).to.have.property('code', newTicket.code);
         expect(res.body.data).to.have.property('trainnumber', newTicket.trainnumber);
-
         done();
       });
   });
@@ -127,11 +123,10 @@ describe('Tests for /tickets route', () => {
       .end((err, res) => {
           expect(res).to.have.status(500);
           done();
-        
       });
   });
 
-  it('Test to delete a wrong new ticket', (done) => {
+  it('Test to delete a wrong ticket', (done) => {
     chai
       .request(server)
       .delete(`/tickets/testId`)
@@ -142,7 +137,6 @@ describe('Tests for /tickets route', () => {
 
         expect(response).to.have.status(500);
         expect(response.body).to.deep.equal({ error: 'Internal Server Error' });
-
         done();
       });
   });
