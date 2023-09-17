@@ -1,43 +1,43 @@
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = "test";
 
-const chai = require('chai');
-const expect  = chai.expect;
-const chaiHttp = require('chai-http');
-const server = require('../app');
+const chai = require("chai");
+const expect = chai.expect;
+const chaiHttp = require("chai-http");
+const server = require("../app");
 
-require('chai').should();
+require("chai").should();
 chai.use(chaiHttp);
 
-describe('Tests for /tickets route', () => {
+describe("Tests for /tickets route", () => {
   let testTicketId; // Declare testTicketId in the outer scope
 
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     const newTicket = {
-      trainnumber: 'Test Train',
-      code: 'test code',
-      traindate: '2023-09-09',
+      trainnumber: "Test Train",
+      code: "test code",
+      traindate: "2023-09-09",
     };
 
-    const response = await chai.request(server).post('/tickets').send(newTicket);
+    const response = await chai
+      .request(server)
+      .post("/tickets")
+      .send(newTicket);
 
     testTicketId = response.body.data.id;
-    done();
   });
 
-  afterEach(async (done) => {
+  afterEach(async () => {
     if (testTicketId) {
       await chai.request(server).delete(`/tickets/${testTicketId}`);
     }
-    done();
   });
 
-
-  it('Test route response code...', function (done) {
+  it("Test route response code...", function (done) {
     this.timeout(5000); // Increase the timeout to 5000ms (or adjust as needed)
 
     chai
       .request(server)
-      .get('/tickets')
+      .get("/tickets")
       .end((err, res) => {
         if (err) {
           return done(err);
@@ -48,67 +48,70 @@ describe('Tests for /tickets route', () => {
       });
   });
 
-  it('Test route response object type...', (done) => {
+  it("Test route response object type...", (done) => {
     chai
-    .request(server)
-    .get('/tickets')
-    .end((err, res) => {
-      if (err) {
-        return done(err);
-      }
+      .request(server)
+      .get("/tickets")
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-      expect(res.body.data).to.be.an('array');
-      done();
-    });
-  })
+        expect(res.body.data).to.be.an("array");
+        done();
+      });
+  });
 
   it('Test route response object to have attribute "trainnumber" ...', (done) => {
     chai
-    .request(server)
-    .get('/tickets')
-    .end((err, res) => {
-      if (err) {
-        return done(err);
-      }
+      .request(server)
+      .get("/tickets")
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-      expect(res.body.data[0]).to.have.property('trainnumber');
-      done();
-    });
-  })
+        expect(res.body.data[0]).to.have.property("trainnumber");
+        done();
+      });
+  });
 
-  it('Test route response in not empty ...', (done) => {
+  it("Test route response in not empty ...", (done) => {
     chai
-    .request(server)
-    .get('/tickets')
-    .end((err, res) => {
-      if (err) {
-        return done(err);
-      }
+      .request(server)
+      .get("/tickets")
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-      expect(res.body.data).to.have.length.gt(0);
-      done();
-    });
-  })
+        expect(res.body.data).to.have.length.gt(0);
+        done();
+      });
+  });
 
-  it('Test to create a new ticket', (done) => {
+  it("Test to create a new ticket", (done) => {
     const newTicket = {
-      trainnumber: 'kristina123',
-      code: 'haha888',
-      traindate: '2023-09-09'
+      trainnumber: "kristina123",
+      code: "haha888",
+      traindate: "2023-09-09",
     };
 
     chai
       .request(server)
-      .post('/tickets')
+      .post("/tickets")
       .send(newTicket)
       .end((err, res) => {
         if (err) {
           return done(err);
         }
         expect(res).to.have.status(201);
-        expect(res.body).to.be.an('object');
-        expect(res.body.data).to.have.property('code', newTicket.code);
-        expect(res.body.data).to.have.property('trainnumber', newTicket.trainnumber);
+        expect(res.body).to.be.an("object");
+        expect(res.body.data).to.have.property("code", newTicket.code);
+        expect(res.body.data).to.have.property(
+          "trainnumber",
+          newTicket.trainnumber
+        );
 
         const createdTicketId = res.body.data.id;
 
@@ -126,22 +129,22 @@ describe('Tests for /tickets route', () => {
       });
   });
 
-  it('Test to create a wrong new ticket', (done) => {
+  it("Test to create a wrong new ticket", (done) => {
     const newTicket = {
-      name: 'karlskrona'
+      name: "karlskrona",
     };
 
     chai
       .request(server)
-      .post('/tickets')
+      .post("/tickets")
       .send(newTicket)
       .end((err, res) => {
-          expect(res).to.have.status(500);
-          done();
+        expect(res).to.have.status(500);
+        done();
       });
   });
 
-  it('Test to delete a wrong ticket', (done) => {
+  it("Test to delete a wrong ticket", (done) => {
     chai
       .request(server)
       .delete(`/tickets/testId`)
@@ -151,8 +154,8 @@ describe('Tests for /tickets route', () => {
         }
 
         expect(response).to.have.status(500);
-        expect(response.body).to.deep.equal({ error: 'Internal Server Error' });
+        expect(response.body).to.deep.equal({ error: "Internal Server Error" });
         done();
       });
   });
-})
+});
