@@ -29,11 +29,14 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
+    - name: Install Dependencies
+      run: npm install
+
     - name: Run tests with .env file
       env:
         ENV_FILE: ${{ secrets.ENV_FILE }} # Use the secret you created
       run: |
         # You can create the .env file here using the secret
         echo "$ENV_FILE" > .env
-        # Run your tests that require the .env file
-        npm test
+        # Run your tests that require the .env file with code coverage
+        npx nyc --reporter=html --reporter=text mocha --exit 'test/**/*.js'
