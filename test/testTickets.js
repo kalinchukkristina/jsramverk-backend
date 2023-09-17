@@ -10,7 +10,6 @@ chai.use(chaiHttp);
 
 describe('Tests for /tickets route', () => {
   let testTicketId; // Declare testTicketId in the outer scope
-  timeout(5000);
 
   beforeEach(async () => {
     const newTicket = {
@@ -31,19 +30,21 @@ describe('Tests for /tickets route', () => {
   });
 
 
-  it('Test route response code...', (done) => {
-    chai
-    .request(server)
-    .get('/tickets')
-    .end((err, res) => {
-      if (err) {
-        return done(err);
-      }
+  it('Test route response code...', function (done) {
+    this.timeout(5000); // Increase the timeout to 5000ms (or adjust as needed)
 
-      expect(res).to.have.status(200);
-      done();
-    });
-  })
+    chai
+      .request(server)
+      .get('/tickets')
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        expect(res).to.have.status(200);
+        done();
+      });
+  });
 
   it('Test route response object type...', (done) => {
     chai
