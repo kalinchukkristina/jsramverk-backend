@@ -9,27 +9,23 @@ require('chai').should();
 chai.use(chaiHttp);
 
 describe('Tests for /tickets route', () => {
+  let testTicketId; // Declare testTicketId in the outer scope
+
   beforeEach(async () => {
     const newTicket = {
       trainnumber: 'Test Train',
       code: 'test code',
-      traindate: '2023-09-09'
+      traindate: '2023-09-09',
     };
 
-    const response = await chai
-      .request(server)
-      .post('/tickets')
-      .send(newTicket);
+    const response = await chai.request(server).post('/tickets').send(newTicket);
 
-      testTicketId = response.body.data.id 
+    testTicketId = response.body.data.id;
   });
-
 
   afterEach(async () => {
     if (testTicketId) {
-      await chai
-        .request(server)
-        .delete(`/tickets/${testTicketId}`);
+      await chai.request(server).delete(`/tickets/${testTicketId}`);
     }
   });
 
