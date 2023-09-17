@@ -24,9 +24,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Set up Docker
-      uses: docker/setup-docker@v1
-
     - name: Start MongoDB Container
       run: docker run -d --name mongodb -p 27017:27017 mongo:4.4
 
