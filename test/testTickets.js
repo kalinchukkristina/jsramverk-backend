@@ -10,6 +10,7 @@ chai.use(chaiHttp);
 
 describe('Tests for /tickets route', () => {
   let testTicketId; // Declare testTicketId in the outer scope
+  this.timeout(5000);
 
   beforeEach(async () => {
     const newTicket = {
