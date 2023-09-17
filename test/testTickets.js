@@ -23,6 +23,7 @@ describe('Tests for /tickets route', () => {
 
       testTicketId = response.body.data.id 
   });
+  done();
 
   afterEach(async () => {
     if (testTicketId) {
@@ -31,6 +32,7 @@ describe('Tests for /tickets route', () => {
         .delete(`/tickets/${testTicketId}`);
     }
   });
+  done();
 
   it('Test route response code...', (done) => {
     chai
