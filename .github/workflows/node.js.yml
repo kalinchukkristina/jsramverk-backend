@@ -24,19 +24,21 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.7.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
+    - name: Set up Docker
+      uses: docker/setup-docker@v1
+
+    - name: Start MongoDB Container
+      run: docker run -d --name mongodb -p 27017:27017 mongo:4.4
 
     - name: Install Dependencies
       run: npm install
 
-    - name: Run tests with .env file
+    - name: Run Tests
       env:
-        ENV_FILE: ${{ secrets.ENV_FILE }} # Use the secret you created
+        ENV_FILE: ${{ secrets.ENV_FILE }}
+        MONGODB_URI: mongodb://localhost:27017/your-database-name
       run: |
         # You can create the .env file here using the secret
         echo "$ENV_FILE" > .env
-        # Run your tests that require the .env file with code coverage
+        # Run your tests, passing the MongoDB URI
         npx nyc --reporter=html --reporter=text mocha --timeout 10000 --exit 'test/**/*.js'
