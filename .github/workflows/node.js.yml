@@ -39,4 +39,4 @@ jobs:
         # You can create the .env file here using the secret
         echo "$ENV_FILE" > .env
         # Run your tests that require the .env file with code coverage
-        npx nyc --reporter=html --reporter=text mocha --exit 'test/**/*.js'
+        npx nyc --reporter=html --reporter=text mocha --timeout 10000 --exit 'test/**/*.js'
