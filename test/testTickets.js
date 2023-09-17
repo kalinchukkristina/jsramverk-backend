@@ -8,10 +8,10 @@ const server = require('../app');
 require('chai').should();
 chai.use(chaiHttp);
 
-describe('Tests for /tickets route', (done) => {
+describe('Tests for /tickets route', () => {
   let testTicketId; // Declare testTicketId in the outer scope
 
-  beforeEach(async () => {
+  beforeEach(async (done) => {
     const newTicket = {
       trainnumber: 'Test Train',
       code: 'test code',
