@@ -29,12 +29,11 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
-    - run: npm install
     - name: Run tests with .env file
-        env:
-          ENV_FILE: ${{ secrets.ENV_FILE }} # Use the secret you created
-        run: |
-          # You can create the .env file here using the secret
-          echo "$ENV_FILE" > .env
-          # Run your tests that require the .env file
-          npm test
+      env:
+        ENV_FILE: ${{ secrets.ENV_FILE }} # Use the secret you created
+      run: |
+        # You can create the .env file here using the secret
+        echo "$ENV_FILE" > .env
+        # Run your tests that require the .env file
+        npm test
