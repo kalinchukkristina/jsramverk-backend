@@ -8,7 +8,7 @@ const server = require('../app');
 require('chai').should();
 chai.use(chaiHttp);
 
-describe('Tests for /tickets route', () => {
+describe('Tests for /tickets route', (done) => {
   let testTicketId; // Declare testTicketId in the outer scope
 
   beforeEach(async () => {
@@ -21,12 +21,14 @@ describe('Tests for /tickets route', () => {
     const response = await chai.request(server).post('/tickets').send(newTicket);
 
     testTicketId = response.body.data.id;
+    done();
   });
 
-  afterEach(async () => {
+  afterEach(async (done) => {
     if (testTicketId) {
       await chai.request(server).delete(`/tickets/${testTicketId}`);
     }
+    done();
   });
 
 
