@@ -8,7 +8,8 @@ const server = require("../app");
 require("chai").should();
 chai.use(chaiHttp);
 
-describe("Tests for /tickets route", () => {
+describe("Tests for /tickets route", function () {
+  this.timeout(10000);
   let testTicketId;
 
   beforeEach((done) => {
