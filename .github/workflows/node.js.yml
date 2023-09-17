@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        mongodb-version: ['7.0']
+        mongodb-version: ['7.x']
 
     steps:
     - uses: actions/checkout@v3
@@ -30,4 +30,11 @@ jobs:
         mongodb-version: ${{ matrix.mongodb-version }}
 
     - run: npm install
-    - run: npm test
+    - name: Run tests with .env file
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }} # Use the secret you created
+        run: |
+          # You can create the .env file here using the secret
+          echo "$ENV_FILE" > .env
+          # Run your tests that require the .env file
+          npm test
