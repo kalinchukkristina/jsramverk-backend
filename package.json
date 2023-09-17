@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text mocha --timeout 10000 --exit 'test/**/*.js'",
+    "test": "nyc --reporter=html --reporter=text mocha --exit 'test/**/*.js'",
     "start": "node app.js"
   },
   "keywords": [],
