@@ -9,32 +9,47 @@ require("chai").should();
 chai.use(chaiHttp);
 
 describe("Tests for /tickets route", () => {
-  let testTicketId; // Declare testTicketId in the outer scope
+  let testTicketId;
 
-  beforeEach(async () => {
+  beforeEach((done) => {
     const newTicket = {
       trainnumber: "Test Train",
       code: "test code",
       traindate: "2023-09-09",
     };
 
-    const response = await chai
+    chai
       .request(server)
       .post("/tickets")
-      .send(newTicket);
-
-    testTicketId = response.body.data.id;
+      .send(newTicket)
+      .end((err, res) => {
+        if (err) {
+          done(err);
+        } else {
+          testTicketId = res.body.data.id;
+          done();
+        }
+      });
   });
 
-  afterEach(async () => {
+  afterEach((done) => {
     if (testTicketId) {
-      await chai.request(server).delete(`/tickets/${testTicketId}`);
+      chai
+        .request(server)
+        .delete(`/tickets/${testTicketId}`)
+        .end((err, res) => {
+          if (err) {
+            done(err);
+          } else {
+            done();
+          }
+        });
+    } else {
+      done();
     }
   });
 
   it("Test route response code...", function (done) {
-    this.timeout(5000); // Increase the timeout to 5000ms (or adjust as needed)
-
     chai
       .request(server)
       .get("/tickets")
