@@ -15,7 +15,7 @@ const httpServer = require("http").createServer(app);
 // Configure CORS to allow requests from your frontend (adjust origin as needed)
 app.use(
   cors({
-    origin: "http://localhost:3000", // Replace with your frontend URL
+    origin: ["http://localhost:3000/", "http://www.student.bth.se/~krka21/editor/"],
     methods: ["GET", "POST"],
   })
 );
