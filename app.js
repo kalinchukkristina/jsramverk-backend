@@ -15,7 +15,7 @@ const httpServer = require("http").createServer(app);
 // Configure CORS to allow requests from your frontend (adjust origin as needed)
 app.use(
   cors({
-    origin: "*",
+    origin: ["http://localhost:3000/", "http://www.student.bth.se/~krka21/editor/"],
     methods: ["GET", "POST"],
   })
 );
@@ -26,7 +26,7 @@ app.disable("x-powered-by");
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "*",
+    origin: ["http://localhost:3000/", "http://www.student.bth.se/~krka21/editor/"],
     methods: ["GET", "POST"],
   },
 });
