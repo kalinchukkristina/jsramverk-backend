@@ -1,0 +1,4 @@
+{
+	"appService.defaultWebAppToDeploy": "undefined/subscriptions/281ba416-34c9-44a3-a786-92533b8181dc/resourceGroups/DIDA-ZAZI21-DV1677-H23-LP1/providers/Microsoft.Web/sites/jsramverk-train-zazi",
+	"appService.deploySubpath": "."
+}

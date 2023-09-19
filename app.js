@@ -26,7 +26,7 @@ app.disable("x-powered-by");
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000/", "http://www.student.bth.se/~krka21/editor/],
     methods: ["GET", "POST"],
   },
 });
