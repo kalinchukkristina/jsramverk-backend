@@ -8,7 +8,6 @@ const tickets = {
                 data: allTickets,
             });
         } catch (error) {
-            console.error('Error getting tickets:', error);
             return res.status(500).json({
                 error: 'Internal Server Error',
             });
@@ -20,7 +19,7 @@ const tickets = {
             const { code, trainnumber, traindate } = req.body;
             const newTicket = new Ticket({ code, trainnumber, traindate });
             await newTicket.save();
-            return res.json({
+            return res.status(201).json({
                 data: {
                     id: newTicket._id,
                     code,
@@ -29,12 +28,33 @@ const tickets = {
                 },
             });
         } catch (error) {
-            console.error('Error creating ticket:', error);
             return res.status(500).json({
                 error: 'Internal Server Error',
             });
         }
     },
+
+    deleteTicket: async function deleteTicket(req, res) {
+        try {
+            const { ticketId } = req.params;
+
+            const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
+    
+            if (!deletedTicket) {
+                return res.status(404).json({
+                    error: 'Ticket not found',
+                });
+            }
+
+            return res.status(200).json({
+                message: 'Ticket deleted successfully',
+            });
+        } catch (error) {
+            return res.status(500).json({
+                error: 'Internal Server Error',
+            });
+        }
+    }
 };
 
 module.exports = tickets;

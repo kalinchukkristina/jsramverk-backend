@@ -24,7 +24,7 @@ async function fetchTrainPositions(io) {
     const eventSource = new EventSource(sseurl)
 
     eventSource.onopen = function() {
-        console.log("Connection to server opened.")
+        console.log("Connection to server opened Via Socket.")
     }
 
     io.on('connection', (socket) => {

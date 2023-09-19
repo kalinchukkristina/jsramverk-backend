@@ -1,0 +1,41 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        mongodb-version: ['7.x']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Start MongoDB Container
+      run: docker run -d --name mongodb -p 27017:27017 mongo:4.4
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Tests
+      env:
+        ENV_FILE: ${{ secrets.ENV_FILE }}
+        MONGODB_URI: mongodb://localhost:27017/your-database-name
+      run: |
+        # You can create the .env file here using the secret
+        echo "$ENV_FILE" > .env
+        # Run your tests, passing the MongoDB URI
+        npx nyc --reporter=html --reporter=text mocha --timeout 10000 --exit 'test/**/*.js'
