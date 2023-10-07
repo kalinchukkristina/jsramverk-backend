@@ -4,11 +4,13 @@ const {
   GraphQLList,
   GraphQLSchema,
 } = require("graphql");
+const Ticket = require("./../models/ticketSchema");
 
 const CodeType = require("./code");
+const TicketType = require("./ticket");
 
 const RootQueryType = new GraphQLObjectType({
-  name: "Query",
+  name: "RootQuery",
   description: "Root Query",
   fields: {
     codes: {
@@ -37,7 +39,51 @@ const RootQueryType = new GraphQLObjectType({
         return result.RESPONSE.RESULT[0].ReasonCode || [];
       },
     },
+    tickets: {
+      type: new GraphQLList(TicketType),
+      resolve: async () => {
+        try {
+          const tickets = await Ticket.find().sort({ _id: -1 });
+          return tickets;
+        } catch (error) {
+          throw new Error("Failed to fetch tickets: " + error.message);
+        }
+      },
+    },
+    delayed: {
+      type: GraphQLString,
+      resolve: () => "all delayed trains",
+    },
   },
 });
 
-module.exports = RootQueryType;
+const RootMutationType = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addTicket: {
+      type: TicketType,
+      args: {
+        code: { type: GraphQLString },
+        trainnumber: { type: GraphQLString },
+        traindate: { type: GraphQLString },
+      },
+      resolve: async (_, args) => {
+        try {
+          let newTicket = new Ticket({
+            code: args.code,
+            trainnumber: args.trainnumber,
+            traindate: args.traindate,
+          });
+          return await newTicket.save();
+        } catch (error) {
+          throw new Error("Failed to create ticket: " + error.message);
+        }
+      },
+    },
+  },
+});
+
+module.exports = new GraphQLSchema({
+  query: RootQueryType,
+  mutation: RootMutationType,
+});
