@@ -9,6 +9,12 @@ const delayed = require("./routes/delayed.js");
 const tickets = require("./routes/tickets.js");
 const codes = require("./routes/codes.js");
 
+const visual = true;
+const { graphqlHTTP } = require("express-graphql");
+const { buildSchema } = require("graphql");
+const { GraphQLSchema } = require("graphql");
+const RootQueryType = require("./graphql/root.js");
+
 const app = express();
 const httpServer = require("http").createServer(app);
 
@@ -50,9 +56,21 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/delayed", delayed);
-app.use("/tickets", tickets);
-app.use("/codes", codes);
+const schema = new GraphQLSchema({
+  query: RootQueryType,
+});
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: schema,
+    graphiql: visual,
+  })
+);
+
+// app.use("/delayed", delayed);
+// app.use("/tickets", tickets);
+// app.use("/codes", codes);
 
 fetchTrainPositions(io);
 
