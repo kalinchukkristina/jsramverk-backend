@@ -1,18 +1,17 @@
 require("dotenv").config();
-
 const express = require("express");
-const cors = require("cors"); // Import the cors package
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const fetchTrainPositions = require("./models/trains.js");
 const { connectDb } = require("./db/database");
-const delayed = require("./routes/delayed.js");
-const tickets = require("./routes/tickets.js");
-const codes = require("./routes/codes.js");
-const { graphqlHTTP } = require("express-graphql");
-const schema = require("./graphql/root.js");
-
 const app = express();
 const httpServer = require("http").createServer(app);
+const port = process.env.PORT || 1337;
+const { ApolloServer } = require("@apollo/server");
+const { expressMiddleware } = require("@apollo/server/express4");
+const { typeDefs, resolvers } = require("./graphql/schema");
+
+// const delayed = require("./routes/delayed.js");
 
 app.use(
   cors({
@@ -32,8 +31,6 @@ const io = require("socket.io")(httpServer, {
   },
 });
 
-const port = process.env.PORT || 1337;
-
 connectDb()
   .then(() => {
     console.log("Connected to MongoDB");
@@ -45,24 +42,25 @@ connectDb()
     console.error("MongoDB connection error:", error);
   });
 
-app.get("/", (req, res) => {
-  res.json({
-    data: "Welcome",
+const bootstrapServer = async () => {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
   });
-});
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema: schema,
-    graphiql: true,
-  })
-);
+  await server.start();
 
-// app.use("/delayed", delayed);
-// app.use("/tickets", tickets);
-// app.use("/codes", codes);
+  app.use("/graphql", expressMiddleware(server));
+  // app.use("/delayed", delayed);
+
+  app.get("/", (req, res) => {
+    res.json({
+      data: "Hello",
+    });
+  });
+};
 
 fetchTrainPositions(io);
+bootstrapServer();
 
 module.exports = app;
