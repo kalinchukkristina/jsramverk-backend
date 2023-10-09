@@ -62,7 +62,7 @@ const typeDefs = `#graphql
     password: String
   }
 
-  input loginInput {
+  input LoginInput {
     username: String,
     password: String
   }
@@ -70,7 +70,7 @@ const typeDefs = `#graphql
   type Mutation {
     createTicket(ticketInput: TicketInput): Ticket,
     createUser(userInput: UserInput): User,
-    loginUser(loginInput: loginInput): User
+    loginUser(LoginInput: LoginInput): User
   }
 `;
 
@@ -184,7 +184,7 @@ const resolvers = {
         throw new Error("Failed to create user: " + error.message);
       }
     },
-    loginUser: async (_, { loginInput: { username, password } }) => {
+    loginUser: async (_, { LoginInput: { username, password } }) => {
       try {
         const user = await User.findOne({ username: username });
         if (!user) {
@@ -202,8 +202,16 @@ const resolvers = {
           { expiresIn: '1h' }
         );
 
-        // Return the token to the client
-        return { userId: user._id, token: token, tokenExpiration: 1 }; // 1 hour
+        return {
+          success: true,
+          message: "Login successful",
+          user: {
+            userId: user._id,
+            username: user.username
+          },
+          token: token,
+          tokenExpiration: 1 // 1 timme
+        };
 
       } catch (error) {
         throw new Error("Login failed: " + error.message);

@@ -19,6 +19,7 @@
     "eventsource": "^2.0.2",
     "express": "^4.14.0",
     "graphql": "^16.8.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.0",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.1",
