@@ -1,10 +1,14 @@
 const Ticket = require("./../models/ticketSchema");
+const User = require("./../models/userSchema");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const typeDefs = `#graphql
   type Query {
     tickets: [Ticket]
     codes: [Code]
     delayed: [Train]
+    users: [User]
   }
 
   type Ticket {
@@ -12,6 +16,12 @@ const typeDefs = `#graphql
     code: String,
     trainnumber: String,
     traindate: String,
+  }
+
+  type User {
+    _id: String,
+    username: String,
+    password: String,
   }
 
   type Code {
@@ -46,8 +56,21 @@ const typeDefs = `#graphql
     trainnumber: String,
     traindate: String,
   }
+
+  input UserInput {
+    username: String,
+    password: String
+  }
+
+  input loginInput {
+    username: String,
+    password: String
+  }
+
   type Mutation {
-    addTicket(ticketInput: TicketInput): Ticket
+    createTicket(ticketInput: TicketInput): Ticket,
+    createUser(userInput: UserInput): User,
+    loginUser(loginInput: loginInput): User
   }
 `;
 
@@ -59,6 +82,14 @@ const resolvers = {
         return tickets;
       } catch (error) {
         throw new Error("Failed to fetch tickets: " + error.message);
+      }
+    },
+    users: async () => {
+      try {
+        const users = await User.find().sort({ _id: -1 });
+        return users;
+      } catch (error) {
+        throw new Error("Failed to fetch users: " + error.message);
       }
     },
     codes: async () => {
@@ -127,7 +158,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    addTicket: async (_, { ticketInput: { code, trainnumber, traindate } }) => {
+    createTicket: async (_, { ticketInput: { code, trainnumber, traindate } }) => {
       try {
         let newTicket = new Ticket({
           code: code,
@@ -137,6 +168,45 @@ const resolvers = {
         return await newTicket.save();
       } catch (error) {
         throw new Error("Failed to create ticket: " + error.message);
+      }
+    },
+    createUser: async (_, { userInput: { username, password} }) => {
+      try {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        let newUser = new User({
+          username: username,
+          password: hashedPassword,
+        });
+        return await newUser.save();
+      } catch (error) {
+        throw new Error("Failed to create user: " + error.message);
+      }
+    },
+    loginUser: async (_, { loginInput: { username, password } }) => {
+      try {
+        const user = await User.findOne({ username: username });
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+          throw new Error("Incorrect password");
+        }
+
+        const token = jwt.sign(
+          { userId: user._id, username: user.username },
+          'a3f9b8d7c6e5f4a3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9',
+          { expiresIn: '1h' }
+        );
+
+        // Return the token to the client
+        return { userId: user._id, token: token, tokenExpiration: 1 }; // 1 hour
+
+      } catch (error) {
+        throw new Error("Login failed: " + error.message);
       }
     },
   },
