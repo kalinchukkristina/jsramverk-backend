@@ -22,7 +22,8 @@ const typeDefs = `#graphql
     _id: String,
     username: String,
     password: String,
-  }
+    tickets: [Ticket]
+}
 
   type LoggedInUser {
     username: String,
@@ -74,9 +75,9 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    createTicket(ticketInput: TicketInput): Ticket,
     createUser(userInput: UserInput): User,
-    loginUser(loginInput: LoginInput): LoggedInUser
+    loginUser(loginInput: LoginInput): LoggedInUser,
+    createTicket(ticketInput: TicketInput, userId: String!): Ticket
   }
 `;
 
@@ -164,14 +165,21 @@ const resolvers = {
     },
   },
   Mutation: {
-    createTicket: async (_, { ticketInput: { code, trainnumber, traindate } }) => {
+    createTicket: async (_, { ticketInput: { code, trainnumber, traindate }, userId }) => {
       try {
-        let newTicket = new Ticket({
-          code: code,
-          trainnumber: trainnumber,
-          traindate: traindate,
-        });
-        return await newTicket.save();
+        const user = await User.findById(userId);
+        if (!user) throw new Error('User not found');
+
+        const ticket = {
+          code,
+          trainnumber,
+          traindate
+        };
+
+        user.tickets.push(ticket);
+        await user.save();
+
+        return ticket;
       } catch (error) {
         throw new Error("Failed to create ticket: " + error.message);
       }
