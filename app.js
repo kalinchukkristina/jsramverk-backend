@@ -11,8 +11,6 @@ const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
 const { typeDefs, resolvers } = require("./graphql/schema");
 
-// const delayed = require("./routes/delayed.js");
-
 app.use(
   cors({
     origin: "*",
@@ -51,7 +49,6 @@ const bootstrapServer = async () => {
   await server.start();
 
   app.use("/graphql", expressMiddleware(server));
-  // app.use("/delayed", delayed);
 
   app.get("/", (req, res) => {
     res.json({
