@@ -1,7 +1,7 @@
 const Ticket = require("./../models/ticketSchema");
 const User = require("./../models/userSchema");
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const typeDefs = `#graphql
   type Query {
@@ -9,6 +9,7 @@ const typeDefs = `#graphql
     codes: [Code]
     delayed: [Train]
     users: [User]
+    user(id: ID!): User
   }
 
   type Ticket {
@@ -100,6 +101,14 @@ const resolvers = {
         throw new Error("Failed to fetch users: " + error.message);
       }
     },
+    user: async (_, { id }) => {
+      try {
+        const user = await User.findById(id);
+        return user;
+      } catch (error) {
+        throw new Error("Failed to fetch user: " + error.message);
+      }
+    },
     codes: async () => {
       const query = `<REQUEST>
           <LOGIN authenticationkey="${process.env.TRAFIKVERKET_API_KEY}" />
@@ -166,15 +175,18 @@ const resolvers = {
     },
   },
   Mutation: {
-    createTicket: async (_, { ticketInput: { code, trainnumber, traindate }, userId }) => {
+    createTicket: async (
+      _,
+      { ticketInput: { code, trainnumber, traindate }, userId }
+    ) => {
       try {
         const user = await User.findById(userId);
-        if (!user) throw new Error('User not found');
+        if (!user) throw new Error("User not found");
 
         const ticket = {
           code,
           trainnumber,
-          traindate
+          traindate,
         };
 
         user.tickets.push(ticket);
@@ -185,7 +197,7 @@ const resolvers = {
         throw new Error("Failed to create ticket: " + error.message);
       }
     },
-    createUser: async (_, { userInput: { username, password} }) => {
+    createUser: async (_, { userInput: { username, password } }) => {
       try {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -213,8 +225,8 @@ const resolvers = {
 
         const token = jwt.sign(
           { userId: user._id, username: user.username },
-          'a3f9b8d7c6e5f4a3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9',
-          { expiresIn: '1h' }
+          "a3f9b8d7c6e5f4a3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9",
+          { expiresIn: "1h" }
         );
 
         return {
@@ -222,7 +234,6 @@ const resolvers = {
           username: user.username,
           token: token,
         };
-
       } catch (error) {
         throw new Error("Login failed: " + error.message);
       }
@@ -247,7 +258,7 @@ const resolvers = {
       } else {
         throw new Error("Ticket not found.");
       }
-    }
+    },
   },
 };
 
