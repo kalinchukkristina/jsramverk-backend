@@ -78,6 +78,7 @@ const typeDefs = `#graphql
     createUser(userInput: UserInput): User,
     loginUser(loginInput: LoginInput): LoggedInUser,
     createTicket(ticketInput: TicketInput, userId: String!): Ticket
+    updateTicket(ticketId: String!, ticketInput: TicketInput!): Ticket
   }
 `;
 
@@ -226,6 +227,27 @@ const resolvers = {
         throw new Error("Login failed: " + error.message);
       }
     },
+    updateTicket: async (_, { ticketId, ticketInput }) => {
+      // Find the user containing the ticket
+      const user = await User.findOne({ "tickets._id": ticketId });
+
+      if (!user) {
+        throw new Error("Ticket not found.");
+      }
+
+      // Find the specific ticket and update it
+      const ticket = user.tickets.id(ticketId);
+
+      if (ticket) {
+        ticket.code = ticketInput.code;
+        ticket.trainnumber = ticketInput.trainnumber;
+        ticket.traindate = ticketInput.traindate;
+        await user.save();
+        return ticket;
+      } else {
+        throw new Error("Ticket not found.");
+      }
+    }
   },
 };
 
