@@ -17,7 +17,7 @@ const authMiddleware = (req, res, next) => {
   if (!authHeader) {
     return res.status(401).send("Not authorized. No token provided.");
   }
-  if (authHeader !== `Bearer ${process.env.YOUR_SECRET_KEY}`) {
+  if (authHeader !== `Bearer ${process.env.SECRET_KEY}`) {
     return res.status(401).send("Not authorized. Invalid token.");
   }
   next();
