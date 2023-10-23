@@ -1,21 +1,32 @@
 require("dotenv").config();
-
 const express = require("express");
-const cors = require("cors"); // Import the cors package
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const fetchTrainPositions = require("./models/trains.js");
 const { connectDb } = require("./db/database");
-const delayed = require("./routes/delayed.js");
-const tickets = require("./routes/tickets.js");
-const codes = require("./routes/codes.js");
-
 const app = express();
 const httpServer = require("http").createServer(app);
+const port = process.env.PORT || 1337;
+const { ApolloServer } = require("@apollo/server");
+const { expressMiddleware } = require("@apollo/server/express4");
+const { typeDefs, resolvers } = require("./graphql/schema");
 
-// Configure CORS to allow requests from your frontend (adjust origin as needed)
+
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send("Not authorized. No token provided.");
+  }
+  if (authHeader !== `Bearer ${process.env.SECRET_KEY}`) {
+    return res.status(401).send("Not authorized. Invalid token.");
+  }
+  next();
+};
+
+
 app.use(
   cors({
-    origin: "http://localhost:3000", // Replace with your frontend URL
+    origin: "*",
     methods: ["GET", "POST"],
   })
 );
@@ -26,12 +37,10 @@ app.disable("x-powered-by");
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
-
-const port = process.env.PORT || 1337;
 
 connectDb()
   .then(() => {
@@ -44,16 +53,24 @@ connectDb()
     console.error("MongoDB connection error:", error);
   });
 
-app.get("/", (req, res) => {
-  res.json({
-    data: "Hello World!",
+const bootstrapServer = async () => {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
   });
-});
 
-app.use("/delayed", delayed);
-app.use("/tickets", tickets);
-app.use("/codes", codes);
+  await server.start();
+
+  app.use('/graphql', authMiddleware, expressMiddleware(server));
+
+  app.get("/", (req, res) => {
+    res.json({
+      data: "Hello",
+    });
+  });
+};
 
 fetchTrainPositions(io);
+bootstrapServer();
 
 module.exports = app;
