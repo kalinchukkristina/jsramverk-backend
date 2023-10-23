@@ -11,6 +11,19 @@ const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
 const { typeDefs, resolvers } = require("./graphql/schema");
 
+
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send("Not authorized. No token provided.");
+  }
+  if (authHeader !== `Bearer ${process.env.SECRET_KEY}`) {
+    return res.status(401).send("Not authorized. Invalid token.");
+  }
+  next();
+};
+
+
 app.use(
   cors({
     origin: "*",
@@ -48,7 +61,7 @@ const bootstrapServer = async () => {
 
   await server.start();
 
-  app.use("/graphql", expressMiddleware(server));
+  app.use('/graphql', authMiddleware, expressMiddleware(server));
 
   app.get("/", (req, res) => {
     res.json({
